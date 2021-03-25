@@ -9,23 +9,23 @@
  
  The code contains the following files :
  
- - **[HYG.py](https://github.com/EnguerranVidal/Photonic-Coaxial-Crystal-Study/tree/main/Gaussian_Packets_Creation)** : contains the **HYG_Map** class which handles the import of the HYG v3 database and the plotting which uses **Plotly**.
+ - **[HYG.py](https://github.com/EnguerranVidal/HYG-STAR-MAP/blob/main/HYG.py)** : contains the **HYG_Map** class which handles the import of the HYG v3 database and the plotting which uses **Plotly**.
  
- - **[database.py](https://github.com/EnguerranVidal/Photonic-Coaxial-Crystal-Study/tree/main/Gaussian_Packets_Creation)** : contains the functions used to convert the **hygdatav3.csv** file into the hygdatav3.txt file and to import the data contained in the **hygdata.txt file**.
+ - **[database.py](https://github.com/EnguerranVidal/HYG-STAR-MAP/blob/main/database.py)** : contains the functions used to convert the **hygdatav3.csv** file into the hygdatav3.txt file and to import the data contained in the **hygdata.txt file**.
  
- - **[hygdata_v3.csv ( RAR version )](https://github.com/EnguerranVidal/Photonic-Coaxial-Crystal-Study/tree/main/Gaussian_Packets_Creation)** : Original Winrar compressed HYG database
+ - **[hygdata_v3.csv ( Compressed version )](https://github.com/EnguerranVidal/HYG-STAR-MAP/blob/main/hygdata_v3.csv.gz)** : Original compressed HYG database
  
- - **[hygdatav3.csv](https://github.com/EnguerranVidal/Photonic-Coaxial-Crystal-Study/tree/main/Gaussian_Packets_Creation)** : csv file of the HYG database
+ - **[hygdatav3.csv](https://github.com/EnguerranVidal/HYG-STAR-MAP/blob/main/hygdatav3.csv)** : csv file of the HYG database
  
- - **[hygdatav3.txt](https://github.com/EnguerranVidal/Photonic-Coaxial-Crystal-Study/tree/main/Gaussian_Packets_Creation)** : txt file of the HYG database
+ - **[hygdatav3.txt](https://github.com/EnguerranVidal/HYG-STAR-MAP/blob/main/hygdatav3.txt)** : txt file of the HYG database
  
- - **[space_bubble.html](https://github.com/EnguerranVidal/Photonic-Coaxial-Crystal-Study/tree/main/Gaussian_Packets_Creation)** : HTML file hosting the space bubble feature plotted by Plotly usage in **HYG.py**
+ - **[space_bubble.html](https://github.com/EnguerranVidal/HYG-STAR-MAP/blob/main/space_bubble.html)** : HTML file hosting the space bubble feature plotted by Plotly usage in **HYG.py**
  
- - **[HR_diagram.html](https://github.com/EnguerranVidal/Photonic-Coaxial-Crystal-Study/tree/main/Gaussian_Packets_Creation)** : HTML file hosting the HR diagram feature plotted by Plotly usage in **HYG.py**
+ - **[HR_diagram.html](https://github.com/EnguerranVidal/HYG-STAR-MAP/blob/main/HR_diagram.html)** : HTML file hosting the HR diagram feature plotted by Plotly usage in **HYG.py**
 
 ## HYG DATA FORMAT :
 
-If we look at the **hygdatav3.txt**, these are the labels :
+If we look at the **[hygdatav3.txt](https://github.com/EnguerranVidal/HYG-STAR-MAP/blob/main/hygdatav3.txt)**, these are the labels :
 
 **id,hip,hd,hr,gl,bf,proper,ra,dec,dist,pmra,pmdec,rv,mag,absmag,spect,ci,x,y,z,vx,vy,vz,rarad,decrad,pmrarad,pmdecrad,bayer,flam,con,comp,comp_primary,base,lum,var,var_min,var_max**
 
@@ -39,9 +39,9 @@ bubble layouts.
 ### **Changes** :
 - We changed the HTML output files names so both the HR and space bubble plost can be open at the same time. 
 
-- In  **[database.py](https://github.com/EnguerranVidal/Photonic-Coaxial-Crystal-Study/tree/main/Gaussian_Packets_Creation)**, we added the "dat2csv" function allowing us to convert any dat file into a csv file. This will be of use if we try to use the Gaia Star survey to double our star count.
+- In  **[database.py](https://github.com/EnguerranVidal/HYG-STAR-MAP/blob/main/database.py)**, we added the "dat2csv" function allowing us to convert any dat file into a csv file. This will be of use if we try to use the Gaia Star survey to double our star count.
 
-- In **[HYG.py](https://github.com/EnguerranVidal/Photonic-Coaxial-Crystal-Study/tree/main/Gaussian_Packets_Creation)**, we changed the layouts of the HR diagram and Space Bubbleplots in order to change the hovertemplates of the labels, making them display names of the pointed stars. We also changed the background to a deep black to aid better visualisation, but we also added a size scale to the Scatter markers which displays radii values. However there seemsto be a few problems with this markers size scaleat the minutes.
+- In **[HYG.py](https://github.com/EnguerranVidal/HYG-STAR-MAP/blob/main/HYG.py)**, we changed the layouts of the HR diagram and Space Bubbleplots in order to change the hovertemplates of the labels, making them display names of the pointed stars. We also changed the background to a deep black to aid better visualisation, but we also added a size scale to the Scatter markers which displays radii values. However there seemsto be a few problems with this markers size scaleat the minutes.
 
 ### **New Issues** :
 
