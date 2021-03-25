@@ -51,5 +51,13 @@ def import_database(txt_file):
     labels=lines[0]
     lines.pop(0)
     return labels,lines
-        
+
+def dat2csv(dat_file,csv_file):
+    with open(dat_file) as infile, open(csv_file, "w") as outfile:
+        csv_writer = csv.writer(outfile)
+        prev = ''
+        csv_writer.writerow(['ID', 'PARENT_ID'])
+        for line in infile.read().splitlines():
+            csv_writer.writerow([line, prev])
+            prev = line
 

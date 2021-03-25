@@ -28,7 +28,6 @@ class HYG_Map():
             print(" Loading HYG Database ... ")
             labels,data=import_database(txt_file)
             print(" Database loaded. ")
-            print(labels)
             self.data=data
             self.labels=labels
             self.n_variables=len(labels)
@@ -36,6 +35,13 @@ class HYG_Map():
         except FileNotFoundError:
             print("'"+txt_file+"' cannot be found in the main directory !")
             raise
+        self.id=self.find_label('id')
+        self.hip=self.find_label('hip')
+        self.hd=self.find_label('hd')
+        self.hr=self.find_label('hr')
+        self.gl=self.find_label('gl')
+        self.bf=self.find_label('bf')
+        self.proper=self.find_label('proper')
 
     def find_label(self,label):
         ''' Finds a possible label in the different columns of the HYG database'''
@@ -47,13 +53,35 @@ class HYG_Map():
         except NameError:
             raise
 
-    def Hertzprung_Russell(self,n):
+    def get_name(self,i):
+        ''' Finds an useful name for a star of given index in the database.'''
+        proper=self.data[i][self.proper] # Proper
+        if proper!='N':
+            return proper
+        bf=self.data[i][self.bf] #Bayer-Flamsteed
+        if bf!='N':
+            return "BF "+bf
+        hr=self.data[i][self.hr] # Bright Star
+        if hr!='N':
+            return "HR "+hr
+        hd=self.data[i][self.hd] # Henry Draper
+        if hd!='N':
+            return "HD "+hd
+        hip=self.data[i][self.hip] # Hipparcos
+        if hd!='N':
+            return "HIP "+hip
+        else:
+            return "ID "+self.data[i][self.id]
+                    
+    def Hertzprung_Russell(self,n,radius=True):
         ''' Plots n stars in the standard Hertzsprung-Russell.
             n --> number of stars'''
         am=self.find_label('absmag')
         ci=self.find_label('ci')
+        lum=self.find_label('lum')
         abs_mag=[]
         color_index=[]
+        luminosity=[]
         for i in range(self.n_stars):
             if self.data[i][am]!='N' and self.data[i][ci]!='N':
                 abs_mag.append(float(self.data[i][am]))
@@ -62,24 +90,30 @@ class HYG_Map():
         multiple=int(m/n)+1
         cis=[]
         mags=[]
+        names=[]
         for i in range(m):
             if i%multiple==0:
                 cis.append(color_index[i])
                 mags.append(abs_mag[i])
-        color_index=np.array(cis)
-        abs_mag=np.array(mags)
-        print(color_index.shape)
-        print(abs_mag.shape)
-        fig = go.Figure(data=go.Scatter(x=color_index,y=abs_mag,
-                                        mode='markers',
-                                        marker=dict(color=color_index,
-                                                    colorscale=star_colorscale(),
-                                                    line_width=1,
-                                                    cmax=2.0,cmin=-0.4)
-                                        ,))
-        fig.update_layout(title='Hertzsprung-Russell Diagram')
+                luminosity.append(float(self.data[i][lum]))
+                names.append(self.get_name(i))
+        if radius==True:
+            color_index=np.array(cis)
+            abs_mag=np.array(mags)
+            color_index=np.array(color_index)
+            luminosity=np.array(luminosity)
+            temp=4600*(1/(0.92*color_index+1.7)+1/(0.92*color_index+0.62))/5778
+            radius=np.sqrt(luminosity)/temp**2
+            Markers=dict(color=color_index,colorscale=star_colorscale(),line_width=0,
+                         cmax=2.0,cmin=-0.4,size=np.cbrt(radius*0.5))
+        else:
+            Markers=dict(color=color_index,colorscale=star_colorscale(),
+                         line_width=0,cmax=2.0,cmin=-0.4)
+        fig = go.Figure(data=go.Scatter(x=color_index,y=abs_mag,mode='markers',marker=Markers,text=names),)
+        fig.update_layout(title='Hertzsprung-Russell Diagram',plot_bgcolor='rgba(0,0,0,255)',)
         fig['layout']['yaxis']['autorange'] = "reversed"
-        fig.write_html('first_figure.html', auto_open=True)
+        print("Plotting Hertzsprung-Russell Diagram...")
+        fig.write_html('HR_diagram.html', auto_open=True)
 
     def space_bubble(self,distance):
         ''' Plots the stars around the Sun contained in a "bubble" of a given radius.
@@ -90,25 +124,40 @@ class HYG_Map():
         y=self.find_label('y')
         z=self.find_label('z')
         d=self.find_label('dist')
+        lum=self.find_label('lum')
         X=[]
         Y=[]
         Z=[]
+        distances=[]
         color_index=[]
+        luminosity=[]
+        abs_mag=[]
+        names=[]
         for i in range(self.n_stars):
             if self.data[i][x]!='N' and self.data[i][y]!='N' and self.data[i][z]!='N' and self.data[i][ci]!='N':
                 if float(self.data[i][d])*3.26156<distance:
                     X.append(float(self.data[i][x])*3.26156)
                     Y.append(float(self.data[i][y])*3.26156)
                     Z.append(float(self.data[i][z])*3.26156)
+                    distances.append(float(self.data[i][d])*3.26156)
                     color_index.append(float(self.data[i][ci]))
-        fig = go.Figure(data=go.Scatter3d(x=X,y=Y,z=Z
-                                          ,mode='markers',
-                                          marker=dict(color=color_index,
-                                                      colorscale=star_colorscale(),
-                                                      line_width=1,
-                                                      cmax=2.0,cmin=-0.4)
-                                        ,))
-        fig.write_html('first_figure.html', auto_open=True)
+                    luminosity.append(float(self.data[i][lum]))
+                    abs_mag.append(float(self.data[i][am]))
+                    names.append(self.get_name(i))
+        color_index=np.array(color_index)
+        luminosity=np.array(luminosity)
+        temp=4600*(1/(0.92*color_index+1.7)+1/(0.92*color_index+0.62))/5778
+        radius=np.sqrt(luminosity)/temp**2
+        Markers=dict(color=color_index,colorscale=star_colorscale(),line_width=0,
+                     cmax=2.0,cmin=-0.4,size=np.sqrt(radius)+2)
+        fig = go.Figure(data=go.Scatter3d(x=X,y=Y,z=Z,mode='markers',marker=Markers,text=names))
+        fig.update_layout(scene = dict(xaxis = dict(nticks=6, range=[-distance,distance],backgroundcolor="rgb(0,0,0)"),
+                                       yaxis = dict(nticks=6, range=[-distance,distance],backgroundcolor="rgb(0,0,0)"),
+                                       zaxis = dict(nticks=6, range=[-distance,distance],backgroundcolor="rgb(0,0,0)"),),
+                          width=700,margin=dict(r=20, l=10, b=10, t=10),)
+        print("Plotting Space Bubble...")
+        print(str(len(names))+" stars have been plotted.")
+        fig.write_html('space_bubble.html', auto_open=True)
                 
 
 ###############################################################
@@ -116,7 +165,7 @@ class HYG_Map():
 ###############################################################
 
 def star_colorscale():
-    ''' Returns a Colorscale for stars color from their color indexes.'''
+    ''' Returns a custom Colorscale for stars color from their color indices.'''
     C=[[0.0,'rgb(155,178,255)'],[0.0208333333333333,'rgb(158,181,255)'],[0.0416666666666666,'rgb(163,184,255)'],
        [0.0624999999999999,'rgb(170,191,255)'],[0.0833333333333332,'rgb(178,197,255)'],[0.1041666666666665,'rgb(187,204,255)'],
        [0.1249999999999998,'rgb(196,210,255)'],[0.1458333333333331,'rgb(204,216,255)'],[0.1666666666666664,'rgb(211,221,255)'],
@@ -137,9 +186,11 @@ def star_colorscale():
     return C
 
 
+
 ###############################################################
 #                       MAIN PROGRAM                          #
 ###############################################################
 
 x=HYG_Map()
 x.Hertzprung_Russell(20000)
+x.space_bubble(1000)
